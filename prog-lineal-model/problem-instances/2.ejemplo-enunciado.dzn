@@ -1,0 +1,6 @@
+N = 12;
+num_ciudades = 5;
+
+% Palmira, Cali, Buga, Tulua, RioFrio
+ciudad_x = [2, 10, 11, 0, 1];
+ciudad_y = [3, 2, 0, 3, 2];
