@@ -30,6 +30,11 @@ constraint forall(i in CIUDADES)(
   dy[i] = abs(y_concierto - ciudad_y[i])
 );
 
+constraint forall(i in CIUDADES)(
+  % A city cannot be at the same location as the concert
+  (x_concierto != ciudad_x[i]) \/ (y_concierto != ciudad_y[i])
+);
+
 % ---- Objective Function -----
 % distancia total entre el concierto y todas las ciudades
 % suma de las distancias manhattan desde el concierto a cada ciudad, esto es justo lo que el problema pide minimizar.
