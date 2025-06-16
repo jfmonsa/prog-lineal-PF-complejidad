@@ -1,0 +1,234 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage[spanish, mexico]{babel}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Informe del Proyecto de Complejidad y Optimización\\
+}
+
+\author{\IEEEauthorblockN{Juan Felipe Monsalve Vargas}
+\IEEEauthorblockA{202160145 \\
+juan.felipe.monsalve@correounivalle.edu.co}
+\and
+\IEEEauthorblockN{Kevin Stiven Gil}
+\IEEEauthorblockA{202159863 \\
+kevin.gil@correounivalle.edu.co}
+\\
+\IEEEauthorblockN{Leider Santiago Cortés Hernández}
+\IEEEauthorblockA{202159879 \\
+cortes.leider@correounivalle.edu.co}
+\and
+\IEEEauthorblockN{Nicolás Prado León}
+\IEEEauthorblockA{202160073 \\
+nicolas.prado@correounivalle.edu.co}
+}
+
+\maketitle
+
+\section{Introducción}
+El problema de encontrar una ubicación óptima para un evento masivo como un concierto puede analizarse desde la perspectiva de la logística y la equidad en el acceso. Este tipo de problemas tiene aplicaciones reales en la planificación urbana y la gestión de servicios públicos. En este proyecto, se modela el departamento del Valle del Cauca como una cuadrícula de N x N km, y se busca hallar un punto que minimice la suma de distancias Manhattan a las ciudades, sin que ese punto coincida con la posición de alguna de ellas, ni beneficie de manera desproporcionada a una ciudad sobre otra.
+
+\section{Objetivos}
+
+\subsection{Objetivo General}
+
+Determinar la ubicación óptima de un concierto dentro del departamento
+del Valle del Cauca mediante un modelo de optimización utilizando
+distancia Manhattan, garantizando equidad en el acceso desde distintas
+ciudades y evitando la localización en zonas que favorezcan a una en
+particular.
+
+\subsection{Objetivos Específicos}
+\begin{itemize}
+	\item
+	Modelar matemáticamente el problema como un caso de programación
+	entera usando restricciones sobre coordenadas y distancia Manhattan.
+	\item
+	Diseñar e implementar una interfaz gráfica en Python que permita
+	ingresar datos, generar archivos válidos para MiniZinc y ejecutar el
+	modelo.
+	\item
+	Utilizar MiniZinc como herramienta de resolución para obtener la
+	ubicación óptima del concierto, aplicando el solver Gecode.
+	\item
+	Realizar pruebas con diferentes distribuciones de ciudades y tamaños
+	del plano, evaluando el comportamiento y desempeño del modelo.
+	\item
+	Analizar los resultados obtenidos para verificar la equidad y
+	eficiencia del modelo frente a escenarios reales y simulados.
+\end{itemize}
+
+\section{Modelo del Problema}
+Se define un plano de coordenadas enteras donde se ubican M ciudades. Se
+usan las siguientes variables:
+
+\begin{itemize}
+	\item
+	\textbf{\texttt{x\_concierto}, \texttt{y\_concierto}:} coordenadas enteras de la ubicación del
+	concierto.
+	\item
+	\textbf{\texttt{ciudad\_x[i]}, \texttt{ciudad\_y[i]}:} coordenadas de la ciudad \texttt{i}.
+	\item
+	\textbf{\texttt{dx[i]}, \texttt{dy[i]}:} distancia absoluta en \texttt{x} y \texttt{y} del concierto a la
+	ciudad \texttt{i}.
+\end{itemize}
+
+\subsection{Restricciones}
+
+\begin{itemize}
+	\item
+	\texttt{dx[i]} = \textbar \texttt{x\_concierto} - \texttt{ciudad\_x[i]}\textbar
+	\item
+	\texttt{dy[i]} = \textbar \texttt{y\_concierto} - \texttt{ciudad\_y[i]}\textbar
+	\item
+	El concierto no puede ubicarse en la posición de ninguna ciudad.
+\end{itemize}
+
+\subsection{Función Objetivo}
+Minimizar la suma de las distancias Manhattan:
+\begin{equation}
+	\text{total\_distancia} = \sum_{i=1}^{M} (dx[i] + dy[i])
+\end{equation}
+
+\section{Explicación de la Implementación}
+La solución se desarrolló con ayuda del lenguaje de modelado MiniZinc
+para formular el modelo matemático. Se utilizó Python con el paquete \texttt{tkinter} para
+crear una interfaz que permita ingresar datos y visualizar los
+resultados del modelo.
+
+La interfaz permite que el usuario:
+
+\begin{itemize}
+	\item
+	Ingrese el valor de N, \texttt{num\_ciudades} y los nombres de las ciudades con
+	sus respectivas coordenadas.
+	\item
+	Genere automáticamente el modelo MiniZinc y resuelva el problema
+	utilizando el solver \texttt{gecode}.
+	\item
+	Visualice la solución óptima, incluyendo coordenadas del concierto y
+	distancia total.
+\end{itemize}
+
+No se muestra la solución directamente dentro de la GUI, sino que se
+genera y muestra el resultado del solver MiniZinc.
+
+\section{Pruebas Realizadas}
+Se utilizaron los siguientes conjuntos de datos:
+
+\subsection{Entrada 1}
+
+Con los valores:
+
+\begin{align*}
+	N &= 10 \\
+	\texttt{num\_ciudades} &= 4 \\
+	\texttt{ciudad\_x} &= \{1,\ 3,\ 2,\ 1\} \\
+	\texttt{ciudad\_y} &= \{9,\ 9,\ 7,\ 4\}
+\end{align*}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\linewidth]{images/entrada1}
+	\caption{Entrada 1.}
+	\label{fig:entrada1}
+\end{figure}
+
+\subsection{Entrada 2}
+
+Correspondiente al ejemplo del enunciado, cuyos valores son:
+
+\begin{align*}
+	N &= 12 \\
+	\texttt{num\_ciudades} &= 5 \\
+	\texttt{ciudad\_x} &= \{2,\ 10,\ 11,\ 0,\ 1\} \\
+	\texttt{ciudad\_y} &= \{3,\ 2,\ 0,\ 3,\ 2\}
+\end{align*}
+
+\subsection{Entrada 3}
+
+Con los valores:
+
+\begin{align*}
+	N &= 15 \\
+	\texttt{num\_ciudades} &= 10 \\
+	\texttt{ciudad\_x} &= \{1,\ 3,\ 2,\ 1,\ 4,\ 6,\ 8,\ 10,\ 11,\ 13\} \\
+	\texttt{ciudad\_y} &= \{14,\ 13,\ 11,\ 8,\ 5,\ 6,\ 4,\ 3,\ 7,\ 2\}
+\end{align*}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\linewidth]{images/entrada3}
+	\caption{Entrada 3.}
+	\label{fig:entrada3}
+\end{figure}
+
+En todos los casos, se pudo obtener la ubicación óptima del concierto que
+minimiza la suma de las distancias a las ciudades.
+
+\section{Análisis de las Pruebas Realizadas}
+
+Al aumentar el valor de N o la cantidad de ciudades, el espacio de
+búsqueda se expande, haciendo más compleja la solución. Se observó que:
+
+\begin{itemize}
+	\item
+	El tiempo de resolución crece moderadamente con más ciudades.
+	\item
+	Si las ciudades están dispersas uniformemente, el concierto tiende a
+	ubicarse en una posición central.
+	\item
+	Si hay aglomeración de ciudades en un sector, el concierto se desplaza
+	hacia ese sector.
+\end{itemize}
+
+Se garantiza equidad al evitar que el concierto quede exactamente en una
+ciudad, y la función objetivo asegura la minimización del desplazamiento
+global.
+
+\section{Conclusiones}
+\begin{itemize}
+	\item
+	El problema fue modelado exitosamente como un caso de programación
+	lineal con variables discretas, utilizando la distancia Manhattan como
+	métrica clave de optimización.
+	\item
+	El uso de MiniZinc facilitó la formulación clara y expresiva del
+	problema, facilitando la inclusión de restricciones y objetivos sin
+	necesidad de codificar algoritmos complejos de búsqueda manual.
+	\item
+	La interfaz en Python simplifica la recolección de datos y automatiza
+	la generación de instancias para MiniZinc.
+	\item
+	El modelo es flexible: se adapta a distintas configuraciones y tamaños
+	de entrada, mostrando que el comportamiento es coherente frente a
+	escenarios simples y también más complejos (como el caso con 10
+	ciudades).
+	\item
+	El modelo se comporta de forma robusta frente a distintas
+	distribuciones y cantidades de ciudades.
+	\item
+	Este ejercicio fortalece el entendimiento de modelado matemático y
+	optimización aplicada, fundamentales para la ingeniería moderna.
+	\item
+	El análisis de las pruebas evidenció que el modelo reacciona
+	adecuadamente ante ciudades alineadas, dispersas o agrupadas,
+	reflejando el desplazamiento necesario en la posición del concierto
+	para minimizar la distancia total.
+	\item
+	En términos generales, el proyecto refleja una comprensión integral de
+	la optimización aplicada a problemas reales, con capacidad de
+	extenderse fácilmente a variantes del problema, cómo ponderar ciudades
+	o añadir restricciones geográficas.
+\end{itemize}
+
+\end{document}

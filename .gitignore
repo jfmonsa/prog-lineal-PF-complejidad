@@ -1,1 +1,6 @@
 venv
+
+latex/**
+!latex/**/*.tex
+!latex/images/
+!latex/images/**
