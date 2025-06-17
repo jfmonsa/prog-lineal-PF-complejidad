@@ -1,3 +1,12 @@
+10
+4
+LaUnion 1 9
+Cali 3 9
+Tulua 2 7
+SanPedro 1 4
+
+#####
+
 12
 5
 Palmira 2 3
@@ -5,3 +14,18 @@ Cali 10 2
 Buga 11 0
 Tulua 0 3
 RioFrio 1 2
+
+####
+
+15
+10
+LaUnion 1 14
+Cali 3 13
+Tulua 2 11
+SanPedro 1 8
+Buga 4 5
+Palmira 6 6
+Zarzal 8 4
+Obando 10 3
+Sevilla 11 7
+Caicedonia 13 2

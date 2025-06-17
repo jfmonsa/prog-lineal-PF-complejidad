@@ -130,7 +130,7 @@ lo cual garantiza que el modelo esté acotado correctamente, sin excluir posible
 
     \item Se evita que el concierto se ubique en la misma posición exacta de una ciudad:
     \[
-    (x_c \ne x_i) \lor (y_c \ne y_i) \quad \forall i \in \{1, \dots, M\}
+    (x_c \ne x_i) \land (y_c \ne y_i) \quad \forall i \in \{1, \dots, M\}
     \]
 \end{itemize}
 
@@ -176,6 +176,13 @@ Correspondiente al ejemplo del enunciado, cuyos valores son:
 	\texttt{ciudad\_x} &= \{2,\ 10,\ 11,\ 0,\ 1\} \\
 	\texttt{ciudad\_y} &= \{3,\ 2,\ 0,\ 3,\ 2\}
 \end{align*}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\linewidth]{images/entrada2}
+	\caption{Entrada 2.}
+	\label{fig:entrada2}
+\end{figure}
 
 \subsection{Entrada 3}
 

@@ -38,7 +38,7 @@ constraint forall(i in CIUDADES)(
 
 constraint forall(i in CIUDADES)(
   % A city cannot be at the same location as the concert
-  (x_concierto != ciudad_x[i]) \/ (y_concierto != ciudad_y[i])
+  (x_concierto != ciudad_x[i]) /\ (y_concierto != ciudad_y[i])
 );
 
 % ---- Objective Function -----
@@ -50,6 +50,7 @@ solve minimize total_distancia;
 output [
   "Concierto en: (", show(x_concierto), ", ", show(y_concierto), ")\n",
   "Distancia total: ", show(total_distancia), "\n\n",
+
 ];
 
 % TODO: pasar explicación del limite superior de dx[i] y dy[i] a el informe en latex.
@@ -57,7 +58,7 @@ output [
 % dx[i]: Representa la distancia absoluta en X entre el concierto y la ciudad i, es decir: |x_concierto - ciudad_x[i]|.
 % dy[i]: Representa la distancia absoluta en Y entre el concierto y la ciudad i, es decir: |y_concierto - ciudad_y[i]|.
 % Se usa 2*N como límite superior porque en el peor caso la distancia entre dos puntos puede ser hasta 2*N - 2 (por ejemplo de (0,0) a (N-1,N-1)).
-% 🎯 ¿Cuál es la mayor distancia posible en un plano de tamaño N×NN×N?
+% ¿Cuál es la mayor distancia posible en un plano de tamaño N×NN×N?
 
 % Si el plano tiene tamaño N×N, los valores posibles para cada coordenada son desde 0 hasta N−1.
 % Entonces:
