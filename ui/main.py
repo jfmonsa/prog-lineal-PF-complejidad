@@ -74,52 +74,62 @@ def ejecutar_modelo():
 
         result = instancia.solve()
         mznGeneratedCodeTemplate = f"""
-            % ---- Params from .dzn -----
-            int: N = {N}; % Tamaño del plano NxN
-            int: num_ciudades = {num_ciudades}; % Cantidad de ciudades
-            int: radius_concierto = 1; % Radio mínimo de distancia al concierto
-            array[1..num_ciudades] of int: ciudad_x = [{', '.join(map(str, ciudad_x))}];
-            array[1..num_ciudades] of int: ciudad_y = [{', '.join(map(str, ciudad_y))}];
+        % ---- Params from .dzn -----
+        % ---- Params from .dzn -----
+        int: N = {N}; % Tamaño del plano NxN
+        int: num_ciudades =  {num_ciudades}; % Cantidad de ciudades
+        int: radius_concierto = 1; % Radio mínimo de distancia al concierto
+        % Arrays for the locations (x,y) of each city
+        array[1..num_ciudades] of int: ciudad_x = [{', '.join(map(str, ciudad_x))}];
+        array[1..num_ciudades] of int: ciudad_y = [{', '.join(map(str, ciudad_y))}];
 
-            set of int: CIUDADES = 1..num_ciudades;
+        % name the range [1 , num_ciudades] as CIUDADES to iterate easily over the cities
+        set of int: CIUDADES = 1..num_ciudades;
 
-            % ---- Variables de decisión ---
-            var 0..N-1: x_concierto;
-            var 0..N-1: y_concierto;
+        % ---- Variables de decisión ---
+        var 0..N-1: x_concierto;
+        var 0..N-1: y_concierto;
 
-            % ---- Aux Variables -----
-            array[CIUDADES] of var 0..2*N: dx;
-            array[CIUDADES] of var 0..2*N: dy;
+        % ---- Aux Variables -----
+        % Arrays to hold the absolute distances in X and Y
+        % dx[i]: Distancia absoluta en X entre el concierto y la ciudad i
+        % dy[i]: Distancia absoluta en Y entre el concierto y la ciudad i
+        % NOTE: range bound 0..2*N explained in the Report
+        array[CIUDADES] of var 0..2*N: dx;
+        array[CIUDADES] of var 0..2*N: dy;
 
-            % ----- Constraints -----
-            constraint forall(i in CIUDADES)(
-            dx[i] = abs(x_concierto - ciudad_x[i]) /\\
-            dy[i] = abs(y_concierto - ciudad_y[i])
-            );
+        % ----- Constraints -----
+        % used to fill the absolute distance arrays dx and dy
+        % For each city i, the distance in X and Y is defined as:
+        % |x_concierto - ciudad_x[i]| == dx[i]
+        % |y_concierto - ciudad_y[i]| == dy[i]
+        % restricción redudante
+        constraint forall(i in CIUDADES)(
+        dx[i] = abs(x_concierto - ciudad_x[i]) /\\
+        dy[i] = abs(y_concierto - ciudad_y[i])
+        );
 
-            constraint forall(i in CIUDADES)(
-            dx[i] + dy[i] > radius_concierto
-            );
+        constraint forall(i in CIUDADES)(
+        dx[i] + dy[i] > radius_concierto
+        );
 
-            constraint forall(i in CIUDADES)(
-            (x_concierto != ciudad_x[i]) \\/ (y_concierto != ciudad_y[i])
-            );
+        constraint forall(i in CIUDADES)(
+        % A city cannot be at the same location as the concert
+        (x_concierto != ciudad_x[i]) /\\ (y_concierto != ciudad_y[i])
+        );
 
-            % ---- Objective Function -----
-            var int: total_distancia = sum(i in CIUDADES)(dx[i] + dy[i]);
-            solve minimize total_distancia;
+        % ---- Objective Function -----
+        % distancia total entre el concierto y todas las ciudades
+        % suma de las distancias manhattan desde el concierto a cada ciudad, esto es justo lo que el problema pide minimizar.
+        var int: total_distancia = sum(i in CIUDADES)(dx[i] + dy[i]);
+        solve minimize total_distancia;
 
-            output [
-            "Concierto en: (", show(x_concierto), ", ", show(y_concierto), ")\\n",
-            "Distancia total: ", show(total_distancia), "\\n\\n",
-            "Distancias individuales desde cada ciudad:\\n"
-            ] ++
-            [
-            "Ciudad ", show(i), " en (", show(ciudad_x[i]), ", ", show(ciudad_y[i]),
-            ") -> Distancia: ", show(dx[i] + dy[i]), "\\n"
-            | i in CIUDADES
-            ];
-            """
+      
+        output [
+        "Concierto en: (", show(x_concierto), ", ", show(y_concierto), ")\\n",
+        "Distancia total: ", show(total_distancia), "\\n\\n",
+        ];
+        """
 
         output_text.insert(tk.END, f"{mznGeneratedCodeTemplate}\n")
 

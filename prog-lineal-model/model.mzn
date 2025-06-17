@@ -49,7 +49,8 @@ solve minimize total_distancia;
 
 output [
   "Concierto en: (", show(x_concierto), ", ", show(y_concierto), ")\n",
-  "Distancia total: ", show(total_distancia), "\n",
+  "Distancia total: ", show(total_distancia), "\n\n",
+
 ];
 
 % TODO: pasar explicación del limite superior de dx[i] y dy[i] a el informe en latex.
