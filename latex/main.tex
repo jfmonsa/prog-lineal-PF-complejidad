@@ -68,38 +68,6 @@ particular.
 \end{itemize}
 
 \section{Modelo del Problema}
-Se define un plano de coordenadas enteras donde se ubican M ciudades. Se
-usan las siguientes variables:
-
-\begin{itemize}
-	\item
-	\textbf{\texttt{x\_concierto}, \texttt{y\_concierto}:} coordenadas enteras de la ubicación del
-	concierto.
-	\item
-	\textbf{\texttt{ciudad\_x[i]}, \texttt{ciudad\_y[i]}:} coordenadas de la ciudad \texttt{i}.
-	\item
-	\textbf{\texttt{dx[i]}, \texttt{dy[i]}:} distancia absoluta en \texttt{x} y \texttt{y} del concierto a la
-	ciudad \texttt{i}.
-\end{itemize}
-
-\subsection{Restricciones}
-
-\begin{itemize}
-	\item
-	\texttt{dx[i]} = \textbar \texttt{x\_concierto} - \texttt{ciudad\_x[i]}\textbar
-	\item
-	\texttt{dy[i]} = \textbar \texttt{y\_concierto} - \texttt{ciudad\_y[i]}\textbar
-	\item
-	El concierto no puede ubicarse en la posición de ninguna ciudad.
-\end{itemize}
-
-\subsection{Función Objetivo}
-Minimizar la suma de las distancias Manhattan:
-\begin{equation}
-	\text{total\_distancia} = \sum_{i=1}^{M} (dx[i] + dy[i])
-\end{equation}
-
-\section{Modelo del Problema}
 
 Se modela el problema sobre un plano cartesiano discreto de tamaño $N \times N$, donde $N$ representa el número de filas y columnas. Cada ciudad está localizada mediante coordenadas enteras $(x_i, y_i)$, y se busca ubicar un concierto en una posición $(x_c, y_c)$ tal que se minimice la suma de las distancias Manhattan desde el concierto hacia cada ciudad.
 
