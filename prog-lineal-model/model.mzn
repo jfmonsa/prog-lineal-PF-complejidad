@@ -54,22 +54,17 @@ output [
 % Se usa 2*N como límite superior porque en el peor caso la distancia entre dos puntos puede ser hasta 2*N - 2 (por ejemplo de (0,0) a (N-1,N-1)).
 % 🎯 ¿Cuál es la mayor distancia posible en un plano de tamaño N×NN×N?
 
-% Si el plano tiene tamaño N×NN×N, los valores posibles para cada coordenada son desde 0 hasta N−1N−1.
+% Si el plano tiene tamaño N×N, los valores posibles para cada coordenada son desde 0 hasta N−1.
 % Entonces:
 
 %     La mayor diferencia en X es:
 %     ∣0−(N−1)∣=N−1
-%     ∣0−(N−1)∣=N−1
 
 %     Lo mismo para Y:
 %     ∣0−(N−1)∣=N−1
-%     ∣0−(N−1)∣=N−1
 
 % Entonces la máxima distancia Manhattan posible es:
-% maˊxima distancia=(N−1)+(N−1)=2N−2
-% maˊxima distancia=(N−1)+(N−1)=2N−2 
-
-
+% maxima distancia=(N−1)+(N−1)=2N−2
 
 % Estas restricciones modelan la distancia absoluta (|a - b|) usando desigualdades lineales.
 % MiniZinc no permite usar directamente abs(a - b) dentro de la función objetivo, por eso usamos estas restricciones para forzar que:

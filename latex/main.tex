@@ -99,28 +99,83 @@ Minimizar la suma de las distancias Manhattan:
 	\text{total\_distancia} = \sum_{i=1}^{M} (dx[i] + dy[i])
 \end{equation}
 
-\section{Explicación de la Implementación}
-La solución se desarrolló con ayuda del lenguaje de modelado MiniZinc
-para formular el modelo matemático. Se utilizó Python con el paquete \texttt{tkinter} para
-crear una interfaz que permita ingresar datos y visualizar los
-resultados del modelo.
+\section{Modelo del Problema}
 
-La interfaz permite que el usuario:
+Se modela el problema sobre un plano cartesiano discreto de tamaño $N \times N$, donde $N$ representa el número de filas y columnas. Cada ciudad está localizada mediante coordenadas enteras $(x_i, y_i)$, y se busca ubicar un concierto en una posición $(x_c, y_c)$ tal que se minimice la suma de las distancias Manhattan desde el concierto hacia cada ciudad.
+
+\subsection*{Variables de decisión}
 
 \begin{itemize}
-	\item
-	Ingrese el valor de N, \texttt{num\_ciudades} y los nombres de las ciudades con
-	sus respectivas coordenadas.
-	\item
-	Genere automáticamente el modelo MiniZinc y resuelva el problema
-	utilizando el solver \texttt{gecode}.
-	\item
-	Visualice la solución óptima, incluyendo coordenadas del concierto y
-	distancia total.
+    \item $x_c$, $y_c$: Coordenadas del concierto. Variables de decisión enteras con dominio $[0, N-1]$.
 \end{itemize}
 
-No se muestra la solución directamente dentro de la GUI, sino que se
-genera y muestra el resultado del solver MiniZinc.
+Estas variables están sujetas a las condiciones de no negatividad y cota superior de forma implícita por el dominio definido:
+\[
+x_c, y_c \in \{0, 1, \dots, N-1\}
+\]
+
+\subsection*{Parámetros del modelo}
+
+\begin{itemize}
+    \item $M$: Número total de ciudades.
+    \item $(x_i, y_i)$: Coordenadas fijas de la ciudad $i$, con $i \in \{1, \dots, M\}$.
+\end{itemize}
+
+\subsection*{Variables auxiliares}
+
+Para modelar las distancias absolutas, se definen:
+
+\begin{itemize}
+    \item $dx_i = |x_c - x_i|$: Distancia en el eje $x$ entre el concierto y la ciudad $i$.
+    \item $dy_i = |y_c - y_i|$: Distancia en el eje $y$ entre el concierto y la ciudad $i$.
+\end{itemize}
+
+Dado que la mayor distancia entre dos coordenadas en el plano es $|0 - (N - 1)| = N - 1$ en cada eje, la máxima distancia Manhattan entre dos puntos en el plano es:
+
+\[
+\max(\text{distancia}) = (N - 1) + (N - 1) = 2N - 2
+\]
+
+Por tanto, se define el dominio de las variables auxiliares como:
+\[
+dx_i, dy_i \in [0, 2N]
+\]
+lo cual garantiza que el modelo esté acotado correctamente, sin excluir posibles soluciones.
+
+\subsection*{Restricciones}
+
+\begin{itemize}
+    \item Modelado de la distancia absoluta en ambos ejes, para cada ciudad $i$:
+    \[
+    dx_i = |x_c - x_i| \quad \forall i \in \{1, \dots, M\}
+    \]
+    \[
+    dy_i = |y_c - y_i| \quad \forall i \in \{1, \dots, M\}
+    \]
+    Dado que el uso directo del valor absoluto en funciones objetivo no está permitido en MiniZinc, estas expresiones se modelan con desigualdades equivalentes:
+    \[
+    dx_i \geq x_c - x_i,\quad dx_i \geq x_i - x_c
+    \]
+    \[
+    dy_i \geq y_c - y_i,\quad dy_i \geq y_i - y_c
+    \]
+
+    \item Se evita que el concierto se ubique en la misma posición exacta de una ciudad:
+    \[
+    (x_c \ne x_i) \lor (y_c \ne y_i) \quad \forall i \in \{1, \dots, M\}
+    \]
+\end{itemize}
+
+\subsection*{Función Objetivo}
+
+Minimizar la suma total de las distancias Manhattan entre el concierto y las ciudades:
+
+\[
+\min \sum_{i=1}^{M} (dx_i + dy_i)
+\]
+
+Esta expresión representa la suma de las distancias absolutas en ambos ejes, que corresponde a la distancia Manhattan total desde el punto $(x_c, y_c)$ a todas las ciudades.
+
 
 \section{Pruebas Realizadas}
 Se utilizaron los siguientes conjuntos de datos:
