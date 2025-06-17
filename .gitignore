@@ -4,3 +4,5 @@ latex/**
 !latex/**/*.tex
 !latex/images/
 !latex/images/**
+
+entrada_generada.dzn

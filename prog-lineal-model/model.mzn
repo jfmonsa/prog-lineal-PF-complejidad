@@ -1,6 +1,7 @@
 % ---- Params from .dzn -----
 int: N; % Tamaño del plano NxN
 int: num_ciudades; % Cantidad de ciudades
+int: radius_concierto = 1; % Radio mínimo de distancia al concierto
 % Arrays for the locations (x,y) of each city
 array[CIUDADES] of int: ciudad_x;
 array[CIUDADES] of int: ciudad_y;
@@ -25,9 +26,14 @@ array[CIUDADES] of var 0..2*N: dy;
 % For each city i, the distance in X and Y is defined as:
 % |x_concierto - ciudad_x[i]| == dx[i]
 % |y_concierto - ciudad_y[i]| == dy[i]
+% restricción redudante
 constraint forall(i in CIUDADES)(
   dx[i] = abs(x_concierto - ciudad_x[i]) /\
   dy[i] = abs(y_concierto - ciudad_y[i])
+);
+
+constraint forall(i in CIUDADES)(
+  dx[i] + dy[i] > radius_concierto
 );
 
 constraint forall(i in CIUDADES)(
