@@ -64,18 +64,6 @@ def ejecutar_modelo():
         # Generar archivo .dzn
         generar_archivo_dzn("entrada_generada.dzn", N, num_ciudades, ciudad_x, ciudad_y)
 
-        # Mostrar el contenido del archivo .mzn
-        with open("prog-lineal-model/model.mzn", "r") as f:
-            mzn_content = f.read()
-        output_text.insert(tk.END, "===== Modelo MiniZinc (.mzn) =====\n")
-        output_text.insert(tk.END, mzn_content + "\n")
-
-        # Mostrar el contenido del archivo .dzn
-        with open("entrada_generada.dzn", "r") as f:
-            dzn_content = f.read()
-        output_text.insert(tk.END, "===== Datos (.dzn) =====\n")
-        output_text.insert(tk.END, dzn_content + "\n")
-
         # Crear y resolver nueva instancia
         instancia = Instance(solver, pl_model)
         instancia["N"] = N
@@ -85,9 +73,55 @@ def ejecutar_modelo():
         instancia["radius_concierto"] = 1  # Valor por defecto, se puede ajustar
 
         result = instancia.solve()
-        output_text.insert(tk.END, "===== Resultado MiniZinc =====\n")
-        output_text.insert(tk.END, f"{result}\n")
-        output_text.insert(tk.END, "Archivo 'entrada_generada.dzn' creado con éxito.\n")
+        mznGeneratedCodeTemplate = f"""
+            % ---- Params from .dzn -----
+            int: N = {N}; % Tamaño del plano NxN
+            int: num_ciudades = {num_ciudades}; % Cantidad de ciudades
+            int: radius_concierto = 1; % Radio mínimo de distancia al concierto
+            array[1..num_ciudades] of int: ciudad_x = [{', '.join(map(str, ciudad_x))}];
+            array[1..num_ciudades] of int: ciudad_y = [{', '.join(map(str, ciudad_y))}];
+
+            set of int: CIUDADES = 1..num_ciudades;
+
+            % ---- Variables de decisión ---
+            var 0..N-1: x_concierto;
+            var 0..N-1: y_concierto;
+
+            % ---- Aux Variables -----
+            array[CIUDADES] of var 0..2*N: dx;
+            array[CIUDADES] of var 0..2*N: dy;
+
+            % ----- Constraints -----
+            constraint forall(i in CIUDADES)(
+            dx[i] = abs(x_concierto - ciudad_x[i]) /\\
+            dy[i] = abs(y_concierto - ciudad_y[i])
+            );
+
+            constraint forall(i in CIUDADES)(
+            dx[i] + dy[i] > radius_concierto
+            );
+
+            constraint forall(i in CIUDADES)(
+            (x_concierto != ciudad_x[i]) \\/ (y_concierto != ciudad_y[i])
+            );
+
+            % ---- Objective Function -----
+            var int: total_distancia = sum(i in CIUDADES)(dx[i] + dy[i]);
+            solve minimize total_distancia;
+
+            output [
+            "Concierto en: (", show(x_concierto), ", ", show(y_concierto), ")\\n",
+            "Distancia total: ", show(total_distancia), "\\n\\n",
+            "Distancias individuales desde cada ciudad:\\n"
+            ] ++
+            [
+            "Ciudad ", show(i), " en (", show(ciudad_x[i]), ", ", show(ciudad_y[i]),
+            ") -> Distancia: ", show(dx[i] + dy[i]), "\\n"
+            | i in CIUDADES
+            ];
+            """
+
+        output_text.insert(tk.END, f"{mznGeneratedCodeTemplate}\n")
 
     except Exception as e:
         messagebox.showerror("Error", str(e))
