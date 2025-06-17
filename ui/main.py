@@ -27,6 +27,16 @@ output_text = tk.Text(root, height=15, width=80)
 output_text.pack()
 
 # Función para ejecutar el modelo MiniZinc
+# Función para generar archivo .dzn
+def generar_archivo_dzn(nombre_archivo, N, num_ciudades, ciudad_x, ciudad_y):
+    with open(nombre_archivo, "w") as f:
+        f.write(f"N = {N};\n")
+        f.write(f"num_ciudades = {num_ciudades};\n")
+        f.write(f"ciudad_x = [{', '.join(map(str, ciudad_x))}];\n")
+        f.write(f"ciudad_y = [{', '.join(map(str, ciudad_y))}];\n")
+        f.write("radius_concierto = 1;\n")
+
+# Función para ejecutar el modelo MiniZinc
 def ejecutar_modelo():
     output_text.delete(1.0, tk.END)
     try:
@@ -51,19 +61,33 @@ def ejecutar_modelo():
             ciudad_x.append(int(x))
             ciudad_y.append(int(y))
 
-        # Crea una nueva instancia cada vez
-        solver = Solver.lookup("gecode")
-        pl_model = Model("prog-lineal-model/model.mzn")
-        instancia = Instance(solver, pl_model)
+        # Generar archivo .dzn
+        generar_archivo_dzn("entrada_generada.dzn", N, num_ciudades, ciudad_x, ciudad_y)
 
+        # Mostrar el contenido del archivo .mzn
+        with open("prog-lineal-model/model.mzn", "r") as f:
+            mzn_content = f.read()
+        output_text.insert(tk.END, "===== Modelo MiniZinc (.mzn) =====\n")
+        output_text.insert(tk.END, mzn_content + "\n")
+
+        # Mostrar el contenido del archivo .dzn
+        with open("entrada_generada.dzn", "r") as f:
+            dzn_content = f.read()
+        output_text.insert(tk.END, "===== Datos (.dzn) =====\n")
+        output_text.insert(tk.END, dzn_content + "\n")
+
+        # Crear y resolver nueva instancia
+        instancia = Instance(solver, pl_model)
         instancia["N"] = N
         instancia["num_ciudades"] = num_ciudades
         instancia["ciudad_x"] = ciudad_x
         instancia["ciudad_y"] = ciudad_y
+        instancia["radius_concierto"] = 1  # Valor por defecto, se puede ajustar
 
         result = instancia.solve()
-
+        output_text.insert(tk.END, "===== Resultado MiniZinc =====\n")
         output_text.insert(tk.END, f"{result}\n")
+        output_text.insert(tk.END, "Archivo 'entrada_generada.dzn' creado con éxito.\n")
 
     except Exception as e:
         messagebox.showerror("Error", str(e))

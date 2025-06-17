@@ -2,3 +2,4 @@ N = 10;
 num_ciudades = 4;
 ciudad_x = [1, 3, 2, 1];
 ciudad_y = [9, 9, 7, 4];
+radius_concierto = 1; % Radio mínimo de distancia al concierto
